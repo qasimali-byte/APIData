@@ -1,0 +1,59 @@
+	<CurrentValues>
+
+		<MaxPowerValues>
+
+			<MaxPowersliderValue>25</MaxPowersliderValue>
+
+			<MaxPowerlcdValue>25</MaxPowerlcdValue>
+
+		</MaxPowerValues>
+
+		<MinPowerValues>
+
+			<MinPowersliderValue>25</MinPowersliderValue>
+
+			<MinPowerlcdValue>25</MinPowerlcdValue>
+
+		</MinPowerValues>
+
+		<GridValues>
+
+			<GridsliderValue>65</GridsliderValue>
+
+			<GridlcdValue>65</GridlcdValue>
+
+		</GridValues>
+
+		<GroupValues>
+
+			<GroupsliderValue>41</GroupsliderValue>
+
+			<GrouplcdValue>41</GrouplcdValue>
+
+		</GroupValues>
+
+		<ModeValues>
+
+			<Mode>Dynamic</Mode>
+
+		</ModeValues>
+
+		<SetMasterValues>
+
+			<SetMaster>Disable</SetMaster>
+
+		</SetMasterValues>
+
+		<SolarOptimizer>
+
+			<SolarButtonValue>False</SolarButtonValue>
+
+		</SolarOptimizer>
+
+		<ChargerNetwork>
+
+			<EnableButton>False</EnableButton>
+
+		</ChargerNetwork>
+
+	</CurrentValues>
