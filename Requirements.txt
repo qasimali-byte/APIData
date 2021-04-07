@@ -1,0 +1,5 @@
+flask-restful
+ python3 -m pip install flask_socketio
+ sudo pip install xmltodict
+ pip install json2xml
+ pip install eventlet
