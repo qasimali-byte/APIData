@@ -67,23 +67,23 @@ def checkpostdataforrequestbycloudplatform(postedData):
     else:
         Sucess=True
         return Sucess
-def checkpostdataforResponseonGeneralRequests(postedData):
-    global Sucess
-    if "DeviceID" and "RequestedData" not in postedData:
-        Sucess=False
-        return Sucess
-    else:
-        Sucess=True
-        return Sucess
-def CheckDataForRecieveConfigurationFromEVC(postedData):
-    global Sucess
-    if "DeviceID" and "RequestedData" not in postedData:
-        Sucess=False
-        return Sucess
-    else:
-        Sucess=True
-        return Sucess
 
+def CheckDataForRecieveConfigurationFromEVSE(postedData):
+    global Sucess
+    if "DeviceID" and "RequestedEVSEConfiguration" not in postedData:
+        Sucess=False
+        return Sucess
+    else:
+        Sucess=True
+        return Sucess
+def CheckDataForChargerLock(postedData):
+    global Sucess
+    if "DeviceID" and "ChargerLock" not in postedData:
+        Sucess=False
+        return Sucess
+    else:
+        Sucess=True
+        return Sucess
 
 class UpdateEVC(Resource):
     def post(self):
@@ -95,7 +95,7 @@ class UpdateEVC(Resource):
                 "Message": "An error happened"
                 }
             return jsonify(retJson)
-#-----------------------------Checking The Files---------------------------------
+#-------------------------------------------------------------------------------Checking The Files--------------------------------------------------------------------------
         print("Creating and checking directries")
         pidatafolder = debugmode.dpath + "APIData"
         pd = os.path.isdir(pidatafolder)
@@ -174,7 +174,6 @@ class UpdateMC(Resource):
         }
 
         return jsonify(retMap)
-
 #---------------------------------------HeartBeat Class------------------------------
 class HeartBeat(Resource):
     def post(self):
@@ -186,12 +185,7 @@ class HeartBeat(Resource):
                 "Message": "An error happened"
                 }
             return jsonify(retJson)
-        detailsfile = debugmode.dpath + "APIData/DeviceID.txt"
-        file = open(detailsfile, 'r')
-        for line in file:
-            fields = line.split(";")
-            DeviceID= fields[0]
-            #Step 2: Add the posted data
+        DeviceID=postedData['DeviceID']
         retMap = {
             'Sucess': True,
             'DeviceID': DeviceID
@@ -208,12 +202,7 @@ class UserLogin(Resource):
                 "Message": "An error happened"
                 }
             return jsonify(retJson)
-        detailsfile = debugmode.dpath + "APIData/DeviceID.txt"
-        file = open(detailsfile, 'r')
-        for line in file:
-            fields = line.split(";")
-            DeviceID= fields[0]
-            #Step 2: Add the posted data
+        DeviceID = postedData['DeviceID']
         retMap = {
             'Sucess': True,
             'DeviceID': DeviceID
@@ -230,12 +219,7 @@ class EVModuleStatuschange(Resource):
                 "Message": "An error happened"
                 }
             return jsonify(retJson)
-        detailsfile = debugmode.dpath + "APIData/DeviceID.txt"
-        file = open(detailsfile, 'r')
-        for line in file:
-            fields = line.split(";")
-            DeviceID= fields[0]
-            #Step 2: Add the posted data
+        DeviceID = postedData['DeviceID']
         retMap = {
             'Sucess': True,
             'DeviceID': DeviceID
@@ -252,18 +236,35 @@ class Chargingstatus(Resource):
                 "Message": "An error happened"
                 }
             return jsonify(retJson)
-        detailsfile = debugmode.dpath + "APIData/DeviceID.txt"
-        file = open(detailsfile, 'r')
-        for line in file:
-            fields = line.split(";")
-            DeviceID= fields[0]
-            #Step 2: Add the posted data
+        DeviceID = postedData['DeviceID']
         retMap = {
             'Sucess': True,
             'DeviceID': DeviceID
         }
 
         return jsonify(retMap)
+
+class ChargerLock(Resource):
+    def post(self):
+        postedData = request.get_json()
+        status_code=CheckDataForChargerLock(postedData)
+        ChargerStatus=postedData['ChargerLock']
+        DeviceID=postedData['DeviceID']
+        if (status_code!=True):
+            retJson = {
+                "Sucess": False,
+                "Message": "An error happened"
+                }
+            return jsonify(retJson)
+        retMap = {
+            'Sucess': True,
+            'DeviceID': DeviceID,
+            'ChargerStatus':ChargerStatus
+        }
+
+        return jsonify(retMap)
+
+#----------------------------------------Here we are request to the EVC send me the following data--------------
 class RequestbyCloudPlatfrom(Resource):
     def post(self):
         postedData = request.get_json()
@@ -274,28 +275,25 @@ class RequestbyCloudPlatfrom(Resource):
                 "Message": "An error happened"
                 }
             return jsonify(retJson)
-        detailsfile = debugmode.dpath + "APIData/DeviceID.txt"
-        file = open(detailsfile, 'r')
-        for line in file:
-            fields = line.split(";")
-            DeviceID= fields[0]
+
             #Step 2: Add the posted data
             with open("Recivedconfigurationfromevc.xml") as xml_file:
                 data_dict = xmltodict.parse(xml_file.read())
                 xml_file.close()
                 currentconfiguration = json.dumps(data_dict)
+        DeviceID = postedData['DeviceID']
         retMap = {
             'Sucess': True,
             'DeviceID': DeviceID,
-            'Request':"NewConfigurationByServer" ,     #To get the information from the client
-            'UserValues':{'NAME':"Custom4",'USER_ID':"5",\
-                          'EMAIL':"Custom4@email.com",'PASSWORD':"5555"}, #in case when Create the user
-            'DeleteUserID':"5",
-            'NAME':"Custom2",
-            'EMAIL':"Custom12@email.com",
-            'PASSWORD':"5555",
-            'Configuration':currentconfiguration,
-            'UserId':"2" #change the Name or password of Given Id Users
+            'Request':"SendConfiguration"      #To get the information from the client
+            # 'UserValues':{'NAME':"Custom4",'USER_ID':"5",\
+            #               'EMAIL':"Custom4@email.com",'PASSWORD':"5555"}, #in case when Create the user
+            # 'DeleteUserID':"5",
+            # 'NAME':"Custom2",
+            # 'EMAIL':"Custom12@email.com",
+            # 'PASSWORD':"5555",
+            # 'Configuration':currentconfiguration,
+            # 'UserId':"2" #change the Name or password of Given Id Users
 
 
         }
@@ -305,26 +303,23 @@ class RequestbyCloudPlatfrom(Resource):
 class RecieveConfigurationFromEVC(Resource):
     def post(self):
         postedData = request.get_json()
-        status_code = CheckDataForRecieveConfigurationFromEVC(postedData)
+        status_code = CheckDataForRecieveConfigurationFromEVSE(postedData)
         if (status_code!=True):
             retJson = {
                 "Sucess": False,
                 "Message": "An error happened"
                 }
             return jsonify(retJson)
-        data=postedData['RequestedData']
+        data=postedData['RequestedEVSEConfiguration']
+        print(data)
         print(type(data))
-        final_dictionary = json.loads(data)
-        data = json2xml.Json2xml(final_dictionary , wrapper="all", pretty=True, attr_type=False).to_xml()
-        myfile = open("Recivedconfigurationfromevc.xml", "w")
-        myfile.write(data)
-        myfile.close()
-        FormattheXmlFile()
-        detailsfile = debugmode.dpath + "APIData/DeviceID.txt"
-        file = open(detailsfile, 'r')
-        for line in file:
-            fields = line.split(";")
-            DeviceID= fields[0]
+        # final_dictionary = json.loads(data)
+        # data = json2xml.Json2xml(final_dictionary , wrapper="all", pretty=True, attr_type=False).to_xml()
+        # myfile = open("Recivedconfigurationfromevc.xml", "w")
+        # myfile.write(data)
+        # myfile.close()
+        # FormattheXmlFile()
+        DeviceID = postedData['DeviceID']
             #Step 2: Add the posted data
         retMap = {
             'Sucess': True,
@@ -342,43 +337,22 @@ def FormattheXmlFile():
     f = open('Recivedconfigurationfromevc.xml', 'w')
     f.write('\n'.join(lines[2:lineslength - 1]))
     f.close()
-class ResponseonGeneralRequests(Resource):
-    def post(self):
-        postedData = request.get_json()
-        status_code = checkpostdataforResponseonGeneralRequests(postedData)
-        if (status_code!=True):
-            retJson = {
-                "Sucess": False,
-                "Message": "An error happened"
-                }
-            return jsonify(retJson)
-        detailsfile = debugmode.dpath + "APIData/DeviceID.txt"
-        file = open(detailsfile, 'r')
-        for line in file:
-            fields = line.split(";")
-            DeviceID= fields[0]
-            #Step 2: Add the posted data
-        retMap = {
-            'Sucess': True,
-            'DeviceID': DeviceID,
-        }
 
-        return jsonify(retMap)
 
 api.add_resource(UpdateEVC, "/updateevc")
 api.add_resource(UpdateMC, "/updatemc")
+api.add_resource(ChargerLock,'/chargerlock')
 api.add_resource(HeartBeat,"/heartbeat")
 api.add_resource(UserLogin,"/userlogin")
 api.add_resource(EVModuleStatuschange,"/evmodulestatuschange")
 api.add_resource(Chargingstatus,"/chargingstatus")
 api.add_resource(RequestbyCloudPlatfrom, "/requestbycloudplatform")
-api.add_resource(ResponseonGeneralRequests, "/responseongeneralrequests")
-api.add_resource(RecieveConfigurationFromEVC,"/recieveronfigurationfromevc")
+api.add_resource(RecieveConfigurationFromEVC,"/sendevseconfigurationtocloud")  #recieveronfigurationfromevc
 
 @app.route('/')
 def hello_world():
     return "Welcome to the RestAPI!"
 
 if __name__=="__main__":
-    socketio.run(app, host='192.168.0.111', port=8080, debug=True)
+    socketio.run(app, host='127.0.0.1', port=5000, debug=True,use_reloader=False)
     app.run(debug=True)
