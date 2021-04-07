@@ -15,7 +15,7 @@ def func():
 def parse_xml():
     content_dict = xmltodict.parse(request.data)
     print(type(content_dict))
-    return content_dict
+    return jsonify(content_dict)
 
 if __name__ == '__main__':
     print("Starting python app")
